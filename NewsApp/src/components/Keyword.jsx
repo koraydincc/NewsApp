@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { useGetGoogleNewsQuery } from '../redux/services/googleNews';
+import { Spin } from 'antd';
 
 const Keyword = () => {
   const [keyword, setKeyword] = useState('');
-  const { data, error, isLoading } = useGetGoogleNewsQuery(keyword, {
-    skip: !keyword, 
-  });
+  const { data, error, isLoading, isFetching } = useGetGoogleNewsQuery(keyword);
 
   const handleSearch = (e) => {
     e.preventDefault();
     const { value } = e.target.elements.search;
     setKeyword(value);
   };
+
+  console.log(isFetching);
 
   return (
     <div>
@@ -23,16 +24,17 @@ const Keyword = () => {
         />
         <button type="submit">Search</button>
       </form>
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
-      {data && (
+      {isFetching ? (
+        <Spin size="large" />
+      ) : (
         <div>
-          <h2>Sonuçlar:</h2>
+          <h2>Results:</h2>
           <ul>
-            {data.items[0].title}
+            <li>{data?.items[0].title}</li>
           </ul>
         </div>
       )}
+      {error && <p>Error: {error.message}</p>}
     </div>
   );
 };
